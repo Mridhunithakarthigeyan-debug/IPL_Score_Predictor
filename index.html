@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IPL Score Predictor</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Background Video Styling */
+    #bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+}
+
+
+    .container {
+      position: relative;
+      max-width: 500px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: transparent; /* translucent background */
+      border-radius: 8px;
+      z-index: 1;
+    }
+
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+    }
+
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 0.4rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    #result {
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔄 Background Video -->
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="ipllogo3.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- 🔍 Main Content -->
+  <div class="container">
+    <h2>IPL Score Prediction</h2>
+    
+    <form id="predictForm">
+      <label for="battingTeam">Batting Team</label>
+      <select id="battingTeam" name="battingTeam" required>
+        <option value="">Select Team</option>
+        <option value="Chennai Super Kings">Chennai Super Kings</option>
+        <option value="Delhi Capitals">Delhi Capitals</option>
+        <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+        <option value="Mumbai Indians">Mumbai Indians</option>
+        <option value="Punjab Kings">Punjab Kings</option>
+        <option value="Rajasthan Royals">Rajasthan Royals</option>
+        <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+        <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+      </select>
+      
+      <label for="bowlingTeam">Bowling Team</label>
+      <select id="bowlingTeam" name="bowlingTeam" required>
+        <option value="">Select Team</option>
+        <option value="Chennai Super Kings">Chennai Super Kings</option>
+        <option value="Delhi Capitals">Delhi Capitals</option>
+        <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+        <option value="Mumbai Indians">Mumbai Indians</option>
+        <option value="Punjab Kings">Punjab Kings</option>
+        <option value="Rajasthan Royals">Rajasthan Royals</option>
+        <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+        <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+      </select>
+      
+      <label for="runs">Current Runs</label>
+      <input type="number" id="runs" name="runs" min="0" required />
+      
+      <label for="wickets">Wickets Fallen</label>
+      <input type="number" id="wickets" name="wickets" min="0" max="10" required />
+      
+      <label for="overs">Overs Completed (after 6 overs)</label>
+      <input type="text" id="overs" name="overs" pattern="^\d+(\.\d)?$" placeholder="After 6 overs" required />
+      
+      <button type="submit">Predict Score</button>
+    </form>
+    
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('predictForm');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultDiv.textContent = "Predicting...";
+
+      const data = {
+        batting_team: form.battingTeam.value,
+        bowling_team: form.bowlingTeam.value,
+        runs: Number(form.runs.value),
+        wickets: Number(form.wickets.value),
+        overs: parseFloat(form.overs.value),
+      };
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          throw new Error('Prediction failed');
+        }
+
+        const result = await response.json();
+        resultDiv.textContent = `Predicted Final Score: ${result.predicted_score}`;
+      } catch (error) {
+        resultDiv.textContent = `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
