@@ -1,0 +1,28 @@
+{
+  "learner": {
+    "attributes": {},
+    "feature_names": [
+      "batting_team_code",
+      "bowling_team_code",
+      "over",
+      "cumulative_runs",
+      "cumulative_wickets",
+      "run_rate"
+    ],
+    "feature_types": ["int", "int", "int", "int", "int", "float"],
+    "gradient_booster": {
+      "model": {
+        "trees": [
+          {
+            "nodeid": 0,
+            "split": "run_rate",
+            "split_condition": 8.5,
+            "yes": 1,
+            "no": 2,
+            "missing": 1
+          }
+        ]
+      }
+    }
+  }
+}
